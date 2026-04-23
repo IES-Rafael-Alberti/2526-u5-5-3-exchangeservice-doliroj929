@@ -410,40 +410,30 @@ Identifica **al menos 3 casos de prueba de tu batería** y explica:
 * Por qué ese caso es representativo dentro del conjunto de pruebas.
 
 Incluye enlaces a los tests correspondientes.
-### Respuesta:
+### Respuesta 01:
 
-### 1) Definición de casos de prueba (Clases de Equivalencia)
+### 🔹 1) Se han definido casos de prueba
 
-Para que las pruebas sean completas, he agrupado los datos en "familias" o clases. He elegido estos tres ejemplos:
+He seleccionado estos tres casos de mi batería para mostrar cómo cubrimos diferentes situaciones del servicio:
 
-1.  **Cantidad igual a cero (Clase inválida):**
+1.  ** Debe lanzar excepción si la cantidad es negativa (Clase de equivalencia inválida):**
 
-    -   **Qué valida:** La seguridad de la entrada. Comprueba que el servicio no pierda tiempo calculando si el usuario no pone 0.
+    -   **Qué valida:** La restricción de seguridad que impide procesar importes menores que cero.
 
-    -   **Por qué es clave:** Es un error común de usuario. Si no lo frenamos aquí, podríamos tener problemas en operaciones matemáticas más adelante.
+    -   **Por qué es representativo:** Asegura que el servicio no realice cálculos financieros con datos sin sentido. Es un caso "de borde" que debe ser rechazado inmediatamente con una excepción.
 
-    https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-doliroj929/blob/2d8a41959276b202b1d20f7340279b305c2b3164/src/test/kotlin/ExchangeServiceDesignedBatteryTest.kt#L33-L40
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-doliroj929/blob/e17dba49fa3d34c85f14786937ce7dffc011bcac/src/test/kotlin/ExchangeServiceDesignedBatteryTest.kt#L43-L47
 
+2.  **Debe devolver la misma cantidad si origen y destino son iguales (Clase de equivalencia válida):**
 
-2.  **Tasa directa disponible (Clase válida):**
+    -   **Qué valida:** El comportamiento cuando no se requiere conversión.
 
-    -   **Qué valida:** El funcionamiento normal del servicio cuando todo va bien (el camino fácil).
+    -   **Por qué es representativo:** Comprueba una optimización del código: si la moneda es la misma, el servicio debe ser eficiente y devolver el valor sin buscar tasas en el proveedor.
 
-    -   **Por qué es clave:** Es la función principal: si quiero pasar de Dólar a Euro y tengo el precio, el cálculo debe ser exacto.
-
-    -   [Ver test de tasa directa](https://www.google.com/search?q=https://github.com/usuario/repo/blob/main/src/test/kotlin/PruebaBateriaServicioCambio.kt%23L64)
-
-3.  **Conversión cruzada (Clase válida):**
-
-    -   **Qué valida:** La inteligencia del servicio para buscar una moneda intermedia si no encuentra el cambio directo.
-
-    -   **Por qué es clave:** Es la lógica más compleja. Valida que el código sepa "saltar" de una moneda a otra para llegar al destino.
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-doliroj929/blob/e17dba49fa3d34c85f14786937ce7dffc011bcac/src/test/kotlin/ExchangeServiceDesignedBatteryTest.kt#L65-L74
 
 
-
-
-
-
+-------------------------------------------------
 
 #### 🔹 2) CE f) Se han efectuado pruebas unitarias de clases y funciones
 
@@ -458,6 +448,24 @@ Selecciona uno de tus tests y explica cómo se trata de una **prueba unitaria re
 Justifica por qué este test cumple con el concepto de prueba unitaria según el módulo 
 
 Incluye enlace al test.
+
+### Respuesta 02:
+
+### 2) Se han efectuado pruebas unitarias de clases y funciones
+
+He seleccionado el test: **Debe convertir correctamente usando una tasa directa (Uso de STUB)"**.
+
+-   **Método probado:** La función `cambiar()` de la clase `ServicioCambio`.
+
+-   **Aislamiento:** He aislado el servicio usando un **mockk** llamado `proveedorMock`. Mediante la instrucción `every { proveedorMock.tasa("USDEUR") } returns 0.92`, obligo al colaborador a devolver un valor fijo.
+
+-   **Entrada/Salida:** Introduzco un objeto `Dinero(1000, "USD")` y destino `"EUR"`. Verifico que el resultado sea `920`.
+
+-   **Justificación:** Es una prueba unitaria porque el éxito depende **únicamente** de la lógica de la clase `ServicioCambio`. Al "doblar" el proveedor, eliminamos cualquier fallo que pudiera venir de una base de datos o de la red.
+
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-doliroj929/blob/e17dba49fa3d34c85f14786937ce7dffc011bcac/src/test/kotlin/ExchangeServiceDesignedBatteryTest.kt#L76-L83
+
+----------------------------------------
 
 
 #### 🔹 3) CE g) Se han implementado pruebas automáticas
@@ -476,6 +484,19 @@ Incluye enlace a:
 * ejecución de tests
 
 
+### Respuesta 03:
+3) CE g) Se han implementado pruebas automáticas
+   El sistema de pruebas es automático gracias a la integración de estas herramientas:
+
+Herramientas: Uso Gradle como motor de ejecución y Kotest con el estilo DescribeSpec para organizar los tests.
+
+Lanzamiento: Las pruebas se ejecutan de forma masiva con el comando ./gradlew test. No hace falta que yo compruebe los resultados uno a uno.
+
+Evidencia: El uso de aserciones de Kotest como shouldBe permite que el ordenador compare el resultado esperado con el real. Si el código cambia y algo se rompe, el test fallará automáticamente.
+
+--------------------------
+
+
 #### 🔹 4) CE h) Se han documentado las incidencias detectadas
 
 **Pregunta:**
@@ -491,6 +512,32 @@ Relaciona esto con la importancia de documentar incidencias en el proceso de pru
 Incluye enlace al test implicado.
 
 
+4) CE h) Se han documentado las incidencias detectadas
+   Durante la creación del test  Debe resolver una conversión cruzada, detecté un comportamiento inesperado:
+
+Incidencia: El servicio no encontraba la tasa si los códigos se enviaban en minúsculas (ej. "usd"), ya que mi configuración de MockK esperaba "USD".
+
+Comportamiento: El test fallaba con una excepción de "tasa no encontrada" a pesar de que los datos eran lógicamente correctos.
+
+Solución: Se implementó el uso de .uppercase() en el ServicioCambio para normalizar las entradas. Documentar esto ayuda a asegurar que el servicio sea robusto frente a errores de formato del usuario.
+
+### Respuesta 04:
+
+🔹 4)Se han documentado las incidencias detectadas
+Durante la creación del test Debe resolver una conversión cruzada., detecté un comportamiento inesperado:
+
+Incidencia: El servicio no encontraba la tasa si los códigos se enviaban en minúsculas (ej. "usd"), ya que mi configuración de MockK esperaba "USD".
+
+Comportamiento: El test fallaba con una excepción de "tasa no encontrada" a pesar de que los datos eran lógicamente correctos.
+
+Solución: Se implementó el uso de .uppercase() en el ServicioCambio para normalizar las entradas. Documentar esto ayuda a asegurar que el servicio sea robusto frente a errores de formato del usuario.
+
+
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-doliroj929/blob/e17dba49fa3d34c85f14786937ce7dffc011bcac/src/test/kotlin/ExchangeServiceDesignedBatteryTest.kt#L101-L109
+
+
+
+--------------------------------
 #### 🔹 5) CE i) Se han utilizado dobles de prueba para aislar los componentes durante las pruebas
 
 **Pregunta:**
@@ -504,6 +551,30 @@ Analiza el uso de dobles de prueba en tu batería y explica:
 Relaciona tu explicación con la necesidad de reducir el acoplamiento en pruebas unitarias 
 
 Incluye enlaces a los tests donde se utilicen.
+
+### Respuesta 05:
+
+### 🔹 5) CE i) Se han utilizado dobles de prueba para aislar los componentes
+
+En esta batería he aplicado tres tipos de dobles con **MockK** para reducir el acoplamiento:
+
+1.  **Stub:** En el test ** Debe convertir correctamente**. Uso el `proveedorMock` para devolver un `0.92` fijo. El objetivo es simplemente suministrar un dato para que el servicio pueda calcular.
+
+
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-doliroj929/blob/e17dba49fa3d34c85f14786937ce7dffc011bcac/src/test/kotlin/ExchangeServiceDesignedBatteryTest.kt#L76-L83
+
+2.  **Spy:** En el test **" Debe devolver la misma cantidad**. Uso `spyk<ProveedorTasaCambio>()`. El objetivo es observar si el servicio llama al proveedor. Verifico con `verify(exactly = 0)` que no hubo llamadas porque las monedas eran iguales.
+
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-doliroj929/blob/e17dba49fa3d34c85f14786937ce7dffc011bcac/src/test/kotlin/ExchangeServiceDesignedBatteryTest.kt#L65-L74
+
+
+3.  **Mock:** En el test **. Debe verificar el orden exacto.**. Uso `proveedorMock` para forzar fallos y aciertos, y verifico con `verifySequence` que el servicio intenta primero la vía directa antes que la cruzada.
+    https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-doliroj929/blob/e17dba49fa3d34c85f14786937ce7dffc011bcac/src/test/kotlin/ExchangeServiceDesignedBatteryTest.kt#L135-L146
+
+**¿Por qué no usar el objeto real?** Si usáramos siempre `ProveedorTasaCambioEnMemoria`, el test del servicio fallaría si alguien cambia los datos del mapa real. Al usar dobles, "aislamos" el servicio: si el test falla, sabemos que el error está en nuestra lógica y no en los datos externos.
+
+
+
 
 
 ## Fuente conceptual
