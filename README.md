@@ -410,6 +410,39 @@ Identifica **al menos 3 casos de prueba de tu batería** y explica:
 * Por qué ese caso es representativo dentro del conjunto de pruebas.
 
 Incluye enlaces a los tests correspondientes.
+### Respuesta:
+
+### 1) Definición de casos de prueba (Clases de Equivalencia)
+
+Para que las pruebas sean completas, he agrupado los datos en "familias" o clases. He elegido estos tres ejemplos:
+
+1.  **Cantidad igual a cero (Clase inválida):**
+
+    -   **Qué valida:** La seguridad de la entrada. Comprueba que el servicio no pierda tiempo calculando si el usuario no pone 0.
+
+    -   **Por qué es clave:** Es un error común de usuario. Si no lo frenamos aquí, podríamos tener problemas en operaciones matemáticas más adelante.
+
+    https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-doliroj929/blob/2d8a41959276b202b1d20f7340279b305c2b3164/src/test/kotlin/ExchangeServiceDesignedBatteryTest.kt#L33-L40
+
+
+2.  **Tasa directa disponible (Clase válida):**
+
+    -   **Qué valida:** El funcionamiento normal del servicio cuando todo va bien (el camino fácil).
+
+    -   **Por qué es clave:** Es la función principal: si quiero pasar de Dólar a Euro y tengo el precio, el cálculo debe ser exacto.
+
+    -   [Ver test de tasa directa](https://www.google.com/search?q=https://github.com/usuario/repo/blob/main/src/test/kotlin/PruebaBateriaServicioCambio.kt%23L64)
+
+3.  **Conversión cruzada (Clase válida):**
+
+    -   **Qué valida:** La inteligencia del servicio para buscar una moneda intermedia si no encuentra el cambio directo.
+
+    -   **Por qué es clave:** Es la lógica más compleja. Valida que el código sepa "saltar" de una moneda a otra para llegar al destino.
+
+
+
+
+
 
 
 #### 🔹 2) CE f) Se han efectuado pruebas unitarias de clases y funciones
