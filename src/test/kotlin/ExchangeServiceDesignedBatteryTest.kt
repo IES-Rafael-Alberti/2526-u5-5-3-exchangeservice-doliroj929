@@ -10,39 +10,57 @@ import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import io.mockk.verifySequence
-import org.iesra.revilofe.ExchangeRateProvider
-import org.iesra.revilofe.ExchangeService
-import org.iesra.revilofe.InMemoryExchangeRateProvider
-import org.iesra.revilofe.Money
+import org.iesra.revilofe.ProveedorTasaCambio
+import org.iesra.revilofe.ServicioCambio
+import org.iesra.revilofe.ProveedorTasaCambioEnMemoria
+import org.iesra.revilofe.Dinero
 
-class ExchangeServiceDesignedBatteryTest : DescribeSpec({
 
+class PruebaBateriaServicioCambio : DescribeSpec({
+
+    // Definimos el Mock principal para el proveedor
+    val proveedorMock = mockk<ProveedorTasaCambio>()
+    // Inyectamos el mock en el servicio
+    val servicio = ServicioCambio(proveedorMock)
+
+    // Limpiamos los mocks después de cada test para evitar efectos colaterales
     afterTest {
         clearAllMocks()
     }
 
-    describe("battery designed from equivalence classes for ExchangeService") {
+    describe("Batería de Pruebas para ServicioCambio") {
 
-        describe("input validation") {
-            val provider = mockk<ExchangeRateProvider>()
-            val service = ExchangeService(provider)
+        // --- CLASE DE EQUIVALENCIA A: VALIDACIÓN DE ENTRADA ---
+        describe("Validación de entradas (Clases inválidas)") {
 
-            it("throws an exception when the amount is zero") {
+            it("1. Debe lanzar excepción si la cantidad es 0") {
+                val error = shouldThrow<IllegalArgumentException> {
+                    servicio.cambiar(Dinero(0, "USD"), "EUR")
+                }
+                error.message shouldBe "La cantidad debe ser positiva: 0"
+            }
+
+            it("2. Debe lanzar excepción si la cantidad es negativa") {
                 shouldThrow<IllegalArgumentException> {
-                    service.exchange(Money(0, "USD"), "EUR")
+                    servicio.cambiar(Dinero(-100, "USD"), "EUR")
                 }
             }
 
-            it("throws an exception when the amount is negative") {
+            it("3. Debe lanzar excepción si la moneda origen no tiene 3 letras") {
+                shouldThrow<IllegalArgumentException> {
+                    servicio.cambiar(Dinero(100, "US"), "EUR")
+                }
             }
 
-            it("throws an exception when the source currency code is invalid") {
-            }
-
-            it("throws an exception when the target currency code is invalid") {
-
+            it("4. Debe lanzar excepción si la moneda destino no tiene 3 letras") {
+                shouldThrow<IllegalArgumentException> {
+                    servicio.cambiar(Dinero(100, "USD"), "EURO")
+                }
             }
         }
 
-       //..
-}})
+
+    }
+})
+
+
