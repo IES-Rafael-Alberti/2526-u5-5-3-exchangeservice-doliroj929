@@ -139,7 +139,7 @@ class PruebaBateriaServicioCambio : DescribeSpec({
 
                 servicio.cambiar(Dinero(10, "USD"), "JPY")
 
-                // Verificamos que se intenta primero la directa y luego los tramos de la cruzada
+                // Verificamos que se intenta primero la directa y luego los tramos de la cruzada.
                 verifySequence {
                     proveedorMock.tasa("USDJPY")
                     proveedorMock.tasa("USDEUR")
